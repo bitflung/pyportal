@@ -764,25 +764,31 @@ smarttouch = SmartTouch();
 validTouchPoint=False;
 
 #change_to_state("alarm");
+tpValid=False;
 
 while True:
     try:
         tp=pyportal.touchscreen.touch_point;
+        tpValid=True;
     except:
         logger.error("touchscreen input failure");
         tp=None;
+        tpValid=False;
         
-    if(not tp):
-        touched=False;
-        
-    if(smarttouch.push(tp)):
-        # we have captured a smart point
-        stp=smarttouch.consume();
-        #print("consuming the average touchpoint");
-        touched = current_state.touch(stp, touched);
-        #smarttouch=SmartTouch(); # create a new smarttouch container
+    if(tpValid):
+        if(not tp):
+            touched=False;
+            
+        if(smarttouch.push(tp)):
+            # we have captured a smart point
+            stp=smarttouch.consume();
+            #print("consuming the average touchpoint");
+            touched = current_state.touch(stp, touched);
+            #smarttouch=SmartTouch(); # create a new smarttouch container
     else:
-        current_state.tick(time.monotonic());
+        time.sleep(1);
+        
+    current_state.tick(time.monotonic());
     
 print("System exit!");
         
